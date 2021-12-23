@@ -42,7 +42,7 @@ namespace MovieLibrary.WebAPI.Controllers
 
         // POST api/<UserController>
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] UserCaption user)
+        public async Task<IActionResult> Add([FromBody] UserDto user)
         {
             try
             {
@@ -75,16 +75,42 @@ namespace MovieLibrary.WebAPI.Controllers
             }
         }
 
-        //// PUT api/<UserController>/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
+        // PUT api/<UserController>/5
+        [HttpPut("Edit")]
+        public async Task<IActionResult> Edit([FromBody] UserDto user)
+        {
+            try
+            {
+                var found = await userService.EditUser(user);
 
-        //// DELETE api/<UserController>/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
+                if (found)
+                    return Ok();
+                else
+                    return NotFound();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // DELETE api/<UserController>/5
+        [HttpPut("Delete/{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                var found = await userService.DeleteUser(id);
+
+                if (found)
+                    return Ok();
+                else
+                    return NotFound();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

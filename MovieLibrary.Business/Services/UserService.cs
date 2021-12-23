@@ -12,18 +12,18 @@ namespace MovieLibrary.Business
     {
         private static MovielibraryContext db = new MovielibraryContext();
 
-        public async Task InsertUser(UserCaption userCaption)
+        public async Task InsertUser(UserDto userDto)
         {
             User user = new User()
             {
-                FirstName = userCaption.FirstName,
-                LastName = userCaption.LastName,
-                Address = userCaption.Address,
-                Idnumber = userCaption.Idnumber,
+                FirstName = userDto.FirstName,
+                LastName = userDto.LastName,
+                Address = userDto.Address,
+                Idnumber = userDto.Idnumber,
                 InsertDate = DateTime.Now
             };
 
-            var maritalStatusId = await db.MaritalStatuses.Where(s => s.Caption == userCaption.MaritalStatus).Select(s => s.MaritalStatusId).FirstAsync();
+            var maritalStatusId = await db.MaritalStatuses.Where(s => s.Caption == userDto.MaritalStatus).Select(s => s.MaritalStatusId).FirstAsync();
 
             user.MaritalStatusId = maritalStatusId;
 
@@ -31,11 +31,11 @@ namespace MovieLibrary.Business
             await db.SaveChangesAsync();
         }
 
-        public async Task<List<UserCaption>> GetAllUsers()
+        public async Task<List<UserDto>> GetAllUsers()
         {
-            var userList = await db.Users.Where(s => s.DeleteDate == null).Select(item => new UserCaption
+            var userList = await db.Users.Where(s => s.DeleteDate == null).Select(item => new UserDto
             {
-                //UserId = item.UserId,
+                UserId = item.UserId,
                 FirstName = item.FirstName,
                 LastName = item.LastName,
                 Address = item.Address,
@@ -54,7 +54,7 @@ namespace MovieLibrary.Business
             return await db.Users.Where(s => s.DeleteDate == null && s.UserId == id).FirstAsync();
         }
 
-        public async Task<bool> EditUser(User user) //usercaption
+        public async Task<bool> EditUser(UserDto user)
         {
             var targetUser = await GetUser(user.UserId);
 
@@ -65,8 +65,25 @@ namespace MovieLibrary.Business
                 targetUser.Address = user.Address;
                 targetUser.Idnumber = user.Idnumber;
 
-                var maritalStatusId = 
+                var maritalStatusId = await db.MaritalStatuses.Where(s => s.Caption == user.MaritalStatus).Select(s => s.MaritalStatusId).FirstAsync();
+                targetUser.MaritalStatusId = maritalStatusId;
 
+                await db.SaveChangesAsync();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteUser(int id)
+        {
+            var targetUser = await db.Users.FindAsync(id);
+
+            if (targetUser != null)
+            {
+                targetUser.DeleteDate = DateTime.Now;
                 await db.SaveChangesAsync();
                 return true;
             }

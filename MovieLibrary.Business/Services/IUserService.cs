@@ -9,10 +9,10 @@ namespace MovieLibrary.Business
 {
     public interface IUserService
     {
-        public Task InsertUser(UserCaption userCaption);
-        public Task<List<UserCaption>> GetAllUsers();
+        public Task InsertUser(UserDto userCaption);
+        public Task<List<UserDto>> GetAllUsers();
         public Task<User> GetUser(int id);
-        public Task<bool> EditUser(User user);
+        public Task<bool> EditUser(UserDto user);
         //public Task<bool> DeleteUser(int id);
     }
 }
