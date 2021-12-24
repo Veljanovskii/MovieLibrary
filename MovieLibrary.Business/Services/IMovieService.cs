@@ -9,7 +9,7 @@ namespace MovieLibrary.Business
 {
     public interface IMovieService
     {
-        public Task InsertMovie(string caption, int releaseYear, DateTime insertDate);
+        public Task InsertMovie(Movie movie);
         public Task<List<Movie>> GetAllMovies();
         public Task<Movie> GetMovie(int id);
         public Task<bool> EditMovie(Movie movie);

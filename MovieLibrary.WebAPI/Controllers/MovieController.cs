@@ -14,11 +14,11 @@ namespace MovieLibrary.WebAPI.Controllers
     [ApiController]
     public class MovieController : ControllerBase
     {
-        public IMovieService movieService;
+        private readonly IMovieService _movieService;
 
-        public MovieController()
+        public MovieController(IMovieService movieService)
         {
-            movieService = new MovieService();
+            _movieService = movieService;
         }
 
         // GET: api/<MovieController>All
@@ -27,7 +27,7 @@ namespace MovieLibrary.WebAPI.Controllers
         {
             try
             {
-                var list = await movieService.GetAllMovies();
+                var list = await _movieService.GetAllMovies();
 
                 if (list != null)
                     return Ok(list);
@@ -46,7 +46,7 @@ namespace MovieLibrary.WebAPI.Controllers
         {
             try
             {
-                await movieService.InsertMovie(movie.Caption, movie.ReleaseYear, DateTime.Now);
+                await _movieService.InsertMovie(movie);
 
                 return Ok();
             }
@@ -62,7 +62,7 @@ namespace MovieLibrary.WebAPI.Controllers
         {
             try
             {
-                var movie = await movieService.GetMovie(id);
+                var movie = await _movieService.GetMovie(id);
 
                 if (movie != null)
                     return Ok(movie);
@@ -81,7 +81,7 @@ namespace MovieLibrary.WebAPI.Controllers
         {
             try
             {
-                var found = await movieService.EditMovie(movie);
+                var found = await _movieService.EditMovie(movie);
 
                 if (found)
                     return Ok();
@@ -100,7 +100,7 @@ namespace MovieLibrary.WebAPI.Controllers
         {
             try
             {
-                var found = await movieService.DeleteMovie(id);
+                var found = await _movieService.DeleteMovie(id);
 
                 if (found)
                     return Ok();
