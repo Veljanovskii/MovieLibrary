@@ -16,5 +16,10 @@ namespace MovieLibrary.Data.Models
         public string MaritalStatus { get; set; }
         public DateTime InsertDate { get; set; }
         public DateTime? DeleteDate { get; set; }
+
+        //public UserDto(User user)
+        //{
+
+        //}
     }
 }

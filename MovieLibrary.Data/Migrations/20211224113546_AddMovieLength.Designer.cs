@@ -10,7 +10,7 @@ using MovieLibrary.Data.Models;
 namespace MovieLibrary.Data.Migrations
 {
     [DbContext(typeof(MovielibraryContext))]
-    [Migration("20211223160430_AddMovieLength")]
+    [Migration("20211224113546_AddMovieLength")]
     partial class AddMovieLength
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

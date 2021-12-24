@@ -13,6 +13,6 @@ namespace MovieLibrary.Business
         public Task<List<UserDto>> GetAllUsers();
         public Task<User> GetUser(int id);
         public Task<bool> EditUser(UserDto user);
-        //public Task<bool> DeleteUser(int id);
+        public Task<bool> DeleteUser(int id);
     }
 }

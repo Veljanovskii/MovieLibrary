@@ -14,11 +14,11 @@ namespace MovieLibrary.WebAPI.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        public UserService userService;
+        private readonly IUserService _userService;
 
-        public UserController()
+        public UserController(IUserService userService)
         {
-            userService = new UserService();
+            _userService = userService;
         }
 
         // GET: api/<UserController>All
@@ -27,7 +27,7 @@ namespace MovieLibrary.WebAPI.Controllers
         {
             try
             {
-                var list = await userService.GetAllUsers();
+                var list = await _userService.GetAllUsers();
 
                 if (list != null)
                     return Ok(list);
@@ -46,7 +46,7 @@ namespace MovieLibrary.WebAPI.Controllers
         {
             try
             {
-                await userService.InsertUser(user);
+                await _userService.InsertUser(user);
 
                 return Ok();
             }
@@ -62,7 +62,7 @@ namespace MovieLibrary.WebAPI.Controllers
         {
             try
             {
-                var user = await userService.GetUser(id);
+                var user = await _userService.GetUser(id);
 
                 if (user != null)
                     return Ok(user);
@@ -81,7 +81,7 @@ namespace MovieLibrary.WebAPI.Controllers
         {
             try
             {
-                var found = await userService.EditUser(user);
+                var found = await _userService.EditUser(user);
 
                 if (found)
                     return Ok();
@@ -100,7 +100,7 @@ namespace MovieLibrary.WebAPI.Controllers
         {
             try
             {
-                var found = await userService.DeleteUser(id);
+                var found = await _userService.DeleteUser(id);
 
                 if (found)
                     return Ok();
