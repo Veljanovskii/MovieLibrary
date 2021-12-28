@@ -89,6 +89,7 @@ namespace MovieLibrary.Business
             if (targetUser != null)
             {
                 targetUser.DeleteDate = DateTime.Now;
+
                 await _db.SaveChangesAsync();
                 return true;
             }
