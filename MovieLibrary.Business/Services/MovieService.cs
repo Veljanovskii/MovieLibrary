@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using MovieLibrary.Data.DataModels;
 using MovieLibrary.Data.Models;
 
 namespace MovieLibrary.Business
@@ -31,10 +32,28 @@ namespace MovieLibrary.Business
             await _db.SaveChangesAsync();
         }
 
-        public async Task<List<Movie>> GetAllMovies()
+        public async Task<MoviesTotal> GetMovies(string sort, string order, int page)
         {
-            return await _db.Movies.Where(s => s.DeleteDate == null).ToListAsync();
+            IQueryable<Movie> moviesQuery;
+
+            if (order == "" || order == "asc")
+            {
+                moviesQuery = _db.Movies.Where(s => s.DeleteDate == null).OrderBy(s => s.InsertDate).Skip(page * 30).Take(30);
+            }
+            else
+            {
+                moviesQuery = _db.Movies.Where(s => s.DeleteDate == null).OrderByDescending(s => s.InsertDate).Skip(page * 30).Take(30);
+            }
+
+            MoviesTotal moviesTotal = new MoviesTotal
+            {
+                Movies = await moviesQuery.ToListAsync(),
+                TotalMovies = await _db.Movies.CountAsync()
+            };
+
+            return moviesTotal;
         }
+        
 
         public async Task<Movie> GetMovie(int id)
         {

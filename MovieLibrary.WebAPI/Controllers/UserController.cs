@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MovieLibrary.Business;
 using MovieLibrary.Data.Models;
+using MovieLibrary.Data.DataModels;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

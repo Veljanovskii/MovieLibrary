@@ -22,12 +22,12 @@ namespace MovieLibrary.WebAPI.Controllers
         }
 
         // GET: api/<MovieController>All
-        [HttpGet("All")]
-        public async Task<IActionResult> GetAll()
+        [HttpGet]
+        public async Task<IActionResult> Get(string sort, string order, int page)
         {
             try
             {
-                var list = await _movieService.GetAllMovies();
+                var list = await _movieService.GetMovies(sort, order, page);
 
                 if (list != null)
                     return Ok(list);
