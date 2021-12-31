@@ -11,7 +11,7 @@ namespace MovieLibrary.Business
     public interface IMovieService
     {
         public Task InsertMovie(Movie movie);
-        public Task<MoviesTotal> GetMovies(string sort, string order, int page);
+        public Task<MoviesTotal> GetMovies(string sort, string order, int page, int size);
         public Task<Movie> GetMovie(int id);
         public Task<bool> EditMovie(Movie movie);
         public Task<bool> DeleteMovie(int id);
