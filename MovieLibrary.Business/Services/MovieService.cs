@@ -32,42 +32,67 @@ namespace MovieLibrary.Business
             await _db.SaveChangesAsync();
         }
 
-        public async Task<MoviesTotal> GetMovies(string sort, string order, int page, int size)
+        public async Task<MoviesTotal> GetMovies(string sort, string order, int page, int size, string search)
         {
-            IQueryable<Movie> moviesQuery = _db.Movies.OrderBy(s => s.MovieId).Skip(page * size).Take(size);
+            IQueryable<Movie> moviesQuery = _db.Movies.OrderBy(s => s.MovieId);
 
             switch (sort)
             {
                 case "Caption":
                     if (order == "desc")
-                        moviesQuery = _db.Movies.OrderByDescending(s => s.Caption).Skip(page * size).Take(size);
+                        moviesQuery = _db.Movies.OrderByDescending(s => s.Caption);
                     else
-                        moviesQuery = _db.Movies.OrderBy(s => s.Caption).Skip(page * size).Take(size);
+                        moviesQuery = _db.Movies.OrderBy(s => s.Caption);
                     break;
-                case "Release year":
+                case "Release":
                     if (order == "desc")
-                        moviesQuery = _db.Movies.OrderByDescending(s => s.ReleaseYear).Skip(page * size).Take(size);
+                        moviesQuery = _db.Movies.OrderByDescending(s => s.ReleaseYear);
                     else
-                        moviesQuery = _db.Movies.OrderBy(s => s.ReleaseYear).Skip(page * size).Take(size);
+                        moviesQuery = _db.Movies.OrderBy(s => s.ReleaseYear);
                     break;
                 case "Length":
                     if (order == "desc")
-                        moviesQuery = _db.Movies.OrderByDescending(s => s.MovieLength).Skip(page * size).Take(size);
+                        moviesQuery = _db.Movies.OrderByDescending(s => s.MovieLength);
                     else
-                        moviesQuery = _db.Movies.OrderBy(s => s.MovieLength).Skip(page * size).Take(size);
+                        moviesQuery = _db.Movies.OrderBy(s => s.MovieLength);
                     break;
-                case "Insert date":
+                case "Insert":
                     if (order == "desc")
-                        moviesQuery = _db.Movies.OrderByDescending(s => s.InsertDate).Skip(page * size).Take(size);
+                        moviesQuery = _db.Movies.OrderByDescending(s => s.InsertDate);
                     else
-                        moviesQuery = _db.Movies.OrderBy(s => s.InsertDate).Skip(page * size).Take(size);
+                        moviesQuery = _db.Movies.OrderBy(s => s.InsertDate);
                     break;
+            }
+
+            List<Movie> movies;
+            int total;
+
+            if (search != null && search.Length > 2)
+            {
+                movies = await moviesQuery
+                    .Where(s => s.DeleteDate == null)
+                    .Where(s => s.Caption.Contains(search))
+                    .Skip(page * size)
+                    .Take(size)
+                    .ToListAsync();
+                total = await moviesQuery
+                    .Where(s => s.DeleteDate == null)
+                    .Where(s => s.Caption.Contains(search))
+                    .CountAsync();
+            }
+            else 
+            {
+                movies = await moviesQuery.Where(s => s.DeleteDate == null)
+                    .Skip(page * size)
+                    .Take(size)
+                    .ToListAsync();
+                total = await moviesQuery.Where(s => s.DeleteDate == null).CountAsync();
             }
 
             MoviesTotal moviesTotal = new MoviesTotal
             {
-                Movies = await moviesQuery.ToListAsync(),
-                TotalMovies = await _db.Movies.CountAsync()
+                Movies = movies,
+                TotalMovies = total
             };
 
             return moviesTotal;
