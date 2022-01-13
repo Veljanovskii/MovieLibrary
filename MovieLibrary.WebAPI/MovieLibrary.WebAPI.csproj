@@ -12,5 +12,5 @@
     <ProjectReference Include="..\MovieLibrary.Business\MovieLibrary.Business.csproj" />
     <ProjectReference Include="..\MovieLibrary.Data\MovieLibrary.Data.csproj" />
   </ItemGroup>
-
+  
 </Project>
