@@ -6,16 +6,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MovieLibrary.Data.Helpers;
 
 namespace MovieLibrary.Business
 {
     public class UserService : IUserService
     {
         private readonly MovielibraryContext _db;
+        private readonly UserMapper _mapper;
 
         public UserService(MovielibraryContext db)
         {
             _db = db;
+            _mapper = new UserMapper(_db);
         }
 
         public async Task InsertUser(UserDto userDto)
@@ -37,22 +40,89 @@ namespace MovieLibrary.Business
             await _db.SaveChangesAsync();
         }
 
-        public async Task<List<UserDto>> GetAllUsers()
+        public async Task<UsersTotal> GetUsers(string sort, string order, int page, int size, string search)
         {
-            var userList = await _db.Users.Where(s => s.DeleteDate == null).Select(item => new UserDto
+            IQueryable<User> usersQuery = _db.Users.OrderBy(s => s.UserId);
+
+            switch (sort)
             {
-                UserId = item.UserId,
-                FirstName = item.FirstName,
-                LastName = item.LastName,
-                Address = item.Address,
-                Idnumber = item.Idnumber,
-                MaritalStatus = item.MaritalStatus.Caption,
-                InsertDate = item.InsertDate,
-                DeleteDate = item.DeleteDate
+                case "FirstName":
+                    if (order == "desc")
+                        usersQuery = _db.Users.OrderByDescending(s => s.FirstName);
+                    else
+                        usersQuery = _db.Users.OrderBy(s => s.FirstName);
+                    break;
+                case "LastName":
+                    if (order == "desc")
+                        usersQuery = _db.Users.OrderByDescending(s => s.LastName);
+                    else
+                        usersQuery = _db.Users.OrderBy(s => s.LastName);
+                    break;
+                case "Address":
+                    if (order == "desc")
+                        usersQuery = _db.Users.OrderByDescending(s => s.Address);
+                    else
+                        usersQuery = _db.Users.OrderBy(s => s.Address);
+                    break;
+                case "Idnumber":
+                    if (order == "desc")
+                        usersQuery = _db.Users.OrderByDescending(s => s.Idnumber);
+                    else
+                        usersQuery = _db.Users.OrderBy(s => s.Idnumber);
+                    break;
+                case "MaritalStatus":
+                    if (order == "desc")
+                        usersQuery = _db.Users.OrderByDescending(s => s.MaritalStatus);
+                    else
+                        usersQuery = _db.Users.OrderBy(s => s.MaritalStatus);
+                    break;
+                case "InsertDate":
+                    if (order == "desc")
+                        usersQuery = _db.Users.OrderByDescending(s => s.InsertDate);
+                    else
+                        usersQuery = _db.Users.OrderBy(s => s.InsertDate);
+                    break;
+            }
 
-            }).ToListAsync();
+            List<User> users;
+            int total;
 
-            return userList;
+            if (search != null && search.Length > 2)
+            {
+                users = await usersQuery
+                    .Where(s => s.DeleteDate == null)
+                    .Where(s => s.FirstName.Contains(search) || s.LastName.Contains(search))
+                    .Skip(page * size)
+                    .Take(size)
+                    .ToListAsync();
+                total = await usersQuery
+                    .Where(s => s.DeleteDate == null)
+                    .Where(s => s.FirstName.Contains(search) || s.LastName.Contains(search))
+                    .CountAsync();
+            }
+            else
+            {
+                users = await usersQuery.Where(s => s.DeleteDate == null)
+                    .Skip(page * size)
+                    .Take(size)
+                    .ToListAsync();
+                total = await usersQuery.Where(s => s.DeleteDate == null).CountAsync();
+            }
+
+            List<UserDto> dtoUsers = new List<UserDto>();
+
+            foreach (var user in users)
+            {
+                dtoUsers.Add(_mapper.MapUserToDto(user));
+            }
+
+            UsersTotal usersTotal = new UsersTotal
+            {
+                Users = dtoUsers,
+                TotalUsers = total
+            };
+
+            return usersTotal;
         }
 
         public async Task<User> GetUser(int id)
