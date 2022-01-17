@@ -21,7 +21,7 @@ namespace MovieLibrary.WebAPI.Controllers
             _movieService = movieService;
         }
 
-        // GET: api/<MovieController>All
+        // GET: api/<MovieController>
         [HttpGet]
         public async Task<IActionResult> Get(string sort, string order, int page, int size, string search)
         {

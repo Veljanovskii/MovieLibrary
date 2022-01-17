@@ -22,13 +22,13 @@ namespace MovieLibrary.WebAPI.Controllers
             _userService = userService;
         }
 
-        // GET: api/<UserController>All
-        [HttpGet("All")]
-        public async Task<IActionResult> GetAll()
+        // GET: api/<UserController>
+        [HttpGet]
+        public async Task<IActionResult> Get(string sort, string order, int page, int size, string search)
         {
             try
             {
-                var list = await _userService.GetAllUsers();
+                var list = await _userService.GetUsers(sort, order, page, size, search);
 
                 if (list != null)
                     return Ok(list);
@@ -77,7 +77,7 @@ namespace MovieLibrary.WebAPI.Controllers
         }
 
         // PUT api/<UserController>/5
-        [HttpPut("Edit")]
+        [HttpPut]
         public async Task<IActionResult> Edit([FromBody] UserDto user)
         {
             try
@@ -96,7 +96,7 @@ namespace MovieLibrary.WebAPI.Controllers
         }
 
         // DELETE api/<UserController>/5
-        [HttpPut("Delete/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
