@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -41,7 +42,11 @@ namespace MovieLibrary.WebAPI
             services.AddControllers();
             services.AddScoped<IMovieService, MovieService>();
             services.AddScoped<IUserService, UserService>();
-            services.AddDbContext<MovielibraryContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Con")));
+            services.AddDbContext<MovielibraryContext>(options => 
+                options.UseSqlServer(Configuration.GetConnectionString("Con")));
+            services.AddIdentity<IdentityUser, IdentityRole>(options => 
+                options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<MovielibraryContext>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MovieLibrary.WebAPI", Version = "v1" });
@@ -65,6 +70,8 @@ namespace MovieLibrary.WebAPI
             app.UseCors("CORS");
 
             app.UseAuthorization();
+
+            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {

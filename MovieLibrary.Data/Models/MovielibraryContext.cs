@@ -2,6 +2,8 @@
 #nullable disable
 using System;
 using System.Globalization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -9,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace MovieLibrary.Data.Models
 {
-    public partial class MovielibraryContext : DbContext
+    public partial class MovielibraryContext : IdentityDbContext
     {
         public MovielibraryContext()
         {
@@ -108,8 +110,10 @@ namespace MovieLibrary.Data.Models
                 new Movie { MovieId = 1, Caption = "The Wolf of Wallstreet", ReleaseYear = 2013, MovieLength = 180, InsertDate = DateTime.ParseExact("2021-12-21 15:50:35.703", "yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture), DeleteDate = null },
                 new Movie { MovieId = 2, Caption = "Pulp Fiction", ReleaseYear = 1994, MovieLength = 140, InsertDate = DateTime.ParseExact("2021-12-22 11:43:11.777", "yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture), DeleteDate = null },
                 new Movie { MovieId = 3, Caption = "Avatar", ReleaseYear = 2009, MovieLength = 170, InsertDate = DateTime.ParseExact("2021-12-22 16:14:25.437", "yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture), DeleteDate = DateTime.ParseExact("2021-12-22 16:17:50.937", "yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture) });
-
+            
             OnModelCreatingPartial(modelBuilder);
+
+            base.OnModelCreating(modelBuilder);
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
