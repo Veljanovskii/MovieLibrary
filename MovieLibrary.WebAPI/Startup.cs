@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MovieLibrary.Business;
+using MovieLibrary.Business.Services;
 using MovieLibrary.Data.Models;
 using System;
 using System.Collections.Generic;
@@ -42,11 +43,14 @@ namespace MovieLibrary.WebAPI
             services.AddControllers();
             services.AddScoped<IMovieService, MovieService>();
             services.AddScoped<IUserService, UserService>();
-            services.AddDbContext<MovielibraryContext>(options => 
-                options.UseSqlServer(Configuration.GetConnectionString("Con")));
-            services.AddIdentity<IdentityUser, IdentityRole>(options => 
-                options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<MovielibraryContext>();
+            services.AddTransient<ISeedDataService, SeedDataService>();
+            services.AddDbContext<MovielibraryContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("Con")), ServiceLifetime.Transient);
+
+            services.AddIdentity<Employee, IdentityRole>(options => { 
+                options.SignIn.RequireConfirmedAccount = true;
+                options.Password.RequiredLength = 10;
+                }).AddEntityFrameworkStores<MovielibraryContext>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MovieLibrary.WebAPI", Version = "v1" });
@@ -54,7 +58,7 @@ namespace MovieLibrary.WebAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISeedDataService seeder)
         {
             if (env.IsDevelopment())
             {
@@ -77,6 +81,8 @@ namespace MovieLibrary.WebAPI
             {
                 endpoints.MapControllers();
             });
+
+            seeder.Initialize();
         }
     }
 }

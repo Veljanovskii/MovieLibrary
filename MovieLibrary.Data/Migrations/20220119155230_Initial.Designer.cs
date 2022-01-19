@@ -10,8 +10,8 @@ using MovieLibrary.Data.Models;
 namespace MovieLibrary.Data.Migrations
 {
     [DbContext(typeof(MovielibraryContext))]
-    [Migration("20220118120111_Identity-v1")]
-    partial class Identityv1
+    [Migration("20220119155230_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -71,71 +71,6 @@ namespace MovieLibrary.Data.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetRoleClaims");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.ToTable("AspNetUsers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -218,6 +153,80 @@ namespace MovieLibrary.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("MovieLibrary.Data.Models.Employee", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("Employees");
+                });
+
             modelBuilder.Entity("MovieLibrary.Data.Models.MaritalStatus", b =>
                 {
                     b.Property<int>("MaritalStatusId")
@@ -232,28 +241,6 @@ namespace MovieLibrary.Data.Migrations
                     b.HasKey("MaritalStatusId");
 
                     b.ToTable("MaritalStatuses");
-
-                    b.HasData(
-                        new
-                        {
-                            MaritalStatusId = 1,
-                            Caption = "Single"
-                        },
-                        new
-                        {
-                            MaritalStatusId = 2,
-                            Caption = "Married"
-                        },
-                        new
-                        {
-                            MaritalStatusId = 3,
-                            Caption = "Divorced"
-                        },
-                        new
-                        {
-                            MaritalStatusId = 4,
-                            Caption = "Widowed"
-                        });
                 });
 
             modelBuilder.Entity("MovieLibrary.Data.Models.Movie", b =>
@@ -284,33 +271,6 @@ namespace MovieLibrary.Data.Migrations
                     b.HasKey("MovieId");
 
                     b.ToTable("Movies");
-
-                    b.HasData(
-                        new
-                        {
-                            MovieId = 1,
-                            Caption = "The Wolf of Wallstreet",
-                            InsertDate = new DateTime(2021, 12, 21, 15, 50, 35, 703, DateTimeKind.Unspecified),
-                            MovieLength = 180,
-                            ReleaseYear = 2013
-                        },
-                        new
-                        {
-                            MovieId = 2,
-                            Caption = "Pulp Fiction",
-                            InsertDate = new DateTime(2021, 12, 22, 11, 43, 11, 777, DateTimeKind.Unspecified),
-                            MovieLength = 140,
-                            ReleaseYear = 1994
-                        },
-                        new
-                        {
-                            MovieId = 3,
-                            Caption = "Avatar",
-                            DeleteDate = new DateTime(2021, 12, 22, 16, 17, 50, 937, DateTimeKind.Unspecified),
-                            InsertDate = new DateTime(2021, 12, 22, 16, 14, 25, 437, DateTimeKind.Unspecified),
-                            MovieLength = 170,
-                            ReleaseYear = 2009
-                        });
                 });
 
             modelBuilder.Entity("MovieLibrary.Data.Models.User", b =>
@@ -356,29 +316,7 @@ namespace MovieLibrary.Data.Migrations
 
                     b.HasIndex("MaritalStatusId");
 
-                    b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            Address = "123 Main St",
-                            FirstName = "John",
-                            Idnumber = "123456789",
-                            InsertDate = new DateTime(2021, 12, 22, 18, 30, 28, 537, DateTimeKind.Unspecified),
-                            LastName = "Doe",
-                            MaritalStatusId = 1
-                        },
-                        new
-                        {
-                            UserId = 2,
-                            Address = "321 5th St",
-                            FirstName = "Jane",
-                            Idnumber = "987654321",
-                            InsertDate = new DateTime(2021, 12, 22, 18, 40, 11, 610, DateTimeKind.Unspecified),
-                            LastName = "Doe",
-                            MaritalStatusId = 3
-                        });
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -392,7 +330,7 @@ namespace MovieLibrary.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("MovieLibrary.Data.Models.Employee", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -401,7 +339,7 @@ namespace MovieLibrary.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("MovieLibrary.Data.Models.Employee", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -416,7 +354,7 @@ namespace MovieLibrary.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("MovieLibrary.Data.Models.Employee", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -425,7 +363,7 @@ namespace MovieLibrary.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("MovieLibrary.Data.Models.Employee", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
