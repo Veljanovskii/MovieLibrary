@@ -2,6 +2,8 @@
 #nullable disable
 using System;
 using System.Globalization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -9,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace MovieLibrary.Data.Models
 {
-    public partial class MovielibraryContext : DbContext
+    public partial class MovielibraryContext : IdentityDbContext<Employee>
     {
         public MovielibraryContext()
         {
@@ -22,7 +24,8 @@ namespace MovieLibrary.Data.Models
 
         public virtual DbSet<MaritalStatus> MaritalStatuses { get; set; }
         public virtual DbSet<Movie> Movies { get; set; }
-        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<User> Customers { get; set; }
+        public virtual DbSet<Employee> Employees { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -34,6 +37,10 @@ namespace MovieLibrary.Data.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Employee>().ToTable("Employees");
+
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
 
             modelBuilder.Entity<MaritalStatus>(entity =>
@@ -93,21 +100,6 @@ namespace MovieLibrary.Data.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Users_MaritalStatuses");
             });
-
-            modelBuilder.Entity<User>().HasData(
-                new User { UserId = 1, FirstName = "John", LastName = "Doe", Address = "123 Main St", Idnumber = "123456789", MaritalStatusId = 1, InsertDate = DateTime.ParseExact("2021-12-22 18:30:28.537", "yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture), DeleteDate = null },
-                new User { UserId = 2, FirstName = "Jane", LastName = "Doe", Address = "321 5th St", Idnumber = "987654321", MaritalStatusId = 3, InsertDate = DateTime.ParseExact("2021-12-22 18:40:11.610", "yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture), DeleteDate = null });
-
-            modelBuilder.Entity<MaritalStatus>().HasData(
-                new MaritalStatus { MaritalStatusId = 1, Caption = "Single" },
-                new MaritalStatus { MaritalStatusId = 2, Caption = "Married" },
-                new MaritalStatus { MaritalStatusId = 3, Caption = "Divorced" },
-                new MaritalStatus { MaritalStatusId = 4, Caption = "Widowed" });
-
-            modelBuilder.Entity<Movie>().HasData(
-                new Movie { MovieId = 1, Caption = "The Wolf of Wallstreet", ReleaseYear = 2013, MovieLength = 180, InsertDate = DateTime.ParseExact("2021-12-21 15:50:35.703", "yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture), DeleteDate = null },
-                new Movie { MovieId = 2, Caption = "Pulp Fiction", ReleaseYear = 1994, MovieLength = 140, InsertDate = DateTime.ParseExact("2021-12-22 11:43:11.777", "yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture), DeleteDate = null },
-                new Movie { MovieId = 3, Caption = "Avatar", ReleaseYear = 2009, MovieLength = 170, InsertDate = DateTime.ParseExact("2021-12-22 16:14:25.437", "yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture), DeleteDate = DateTime.ParseExact("2021-12-22 16:17:50.937", "yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture) });
 
             OnModelCreatingPartial(modelBuilder);
         }

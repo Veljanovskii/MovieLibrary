@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MovieLibrary.Business;
+using MovieLibrary.Business.Services;
 using MovieLibrary.Data.Models;
 using System;
 using System.Collections.Generic;
@@ -41,7 +43,14 @@ namespace MovieLibrary.WebAPI
             services.AddControllers();
             services.AddScoped<IMovieService, MovieService>();
             services.AddScoped<IUserService, UserService>();
-            services.AddDbContext<MovielibraryContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Con")));
+            services.AddScoped<IEmployeeService, EmployeeService>();
+            services.AddTransient<ISeedDataService, SeedDataService>();
+            services.AddDbContext<MovielibraryContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("Con")), ServiceLifetime.Transient);
+
+            services.AddIdentity<Employee, IdentityRole>(options => {
+                options.Password.RequiredLength = 5;
+                }).AddEntityFrameworkStores<MovielibraryContext>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MovieLibrary.WebAPI", Version = "v1" });
@@ -49,7 +58,7 @@ namespace MovieLibrary.WebAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISeedDataService seeder)
         {
             if (env.IsDevelopment())
             {
@@ -66,10 +75,14 @@ namespace MovieLibrary.WebAPI
 
             app.UseAuthorization();
 
+            app.UseAuthentication();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
+            seeder.Initialize();
         }
     }
 }

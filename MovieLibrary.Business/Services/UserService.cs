@@ -36,51 +36,51 @@ namespace MovieLibrary.Business
 
             user.MaritalStatusId = maritalStatusId;
 
-            await _db.Users.AddAsync(user);
+            await _db.Customers.AddAsync(user);
             await _db.SaveChangesAsync();
         }
 
         public async Task<UsersTotal> GetUsers(string sort, string order, int page, int size, string search)
         {
-            IQueryable<User> usersQuery = _db.Users.OrderBy(s => s.UserId);
+            IQueryable<User> usersQuery = _db.Customers.OrderBy(s => s.UserId);
 
             switch (sort)
             {
                 case "FirstName":
                     if (order == "desc")
-                        usersQuery = _db.Users.OrderByDescending(s => s.FirstName);
+                        usersQuery = _db.Customers.OrderByDescending(s => s.FirstName);
                     else
-                        usersQuery = _db.Users.OrderBy(s => s.FirstName);
+                        usersQuery = _db.Customers.OrderBy(s => s.FirstName);
                     break;
                 case "LastName":
                     if (order == "desc")
-                        usersQuery = _db.Users.OrderByDescending(s => s.LastName);
+                        usersQuery = _db.Customers.OrderByDescending(s => s.LastName);
                     else
-                        usersQuery = _db.Users.OrderBy(s => s.LastName);
+                        usersQuery = _db.Customers.OrderBy(s => s.LastName);
                     break;
                 case "Address":
                     if (order == "desc")
-                        usersQuery = _db.Users.OrderByDescending(s => s.Address);
+                        usersQuery = _db.Customers.OrderByDescending(s => s.Address);
                     else
-                        usersQuery = _db.Users.OrderBy(s => s.Address);
+                        usersQuery = _db.Customers.OrderBy(s => s.Address);
                     break;
                 case "Idnumber":
                     if (order == "desc")
-                        usersQuery = _db.Users.OrderByDescending(s => s.Idnumber);
+                        usersQuery = _db.Customers.OrderByDescending(s => s.Idnumber);
                     else
-                        usersQuery = _db.Users.OrderBy(s => s.Idnumber);
+                        usersQuery = _db.Customers.OrderBy(s => s.Idnumber);
                     break;
                 case "MaritalStatus":
                     if (order == "desc")
-                        usersQuery = _db.Users.OrderByDescending(s => s.MaritalStatus);
+                        usersQuery = _db.Customers.OrderByDescending(s => s.MaritalStatus);
                     else
-                        usersQuery = _db.Users.OrderBy(s => s.MaritalStatus);
+                        usersQuery = _db.Customers.OrderBy(s => s.MaritalStatus);
                     break;
                 case "InsertDate":
                     if (order == "desc")
-                        usersQuery = _db.Users.OrderByDescending(s => s.InsertDate);
+                        usersQuery = _db.Customers.OrderByDescending(s => s.InsertDate);
                     else
-                        usersQuery = _db.Users.OrderBy(s => s.InsertDate);
+                        usersQuery = _db.Customers.OrderBy(s => s.InsertDate);
                     break;
             }
 
@@ -127,7 +127,7 @@ namespace MovieLibrary.Business
 
         public async Task<User> GetUser(int id)
         {
-            return await _db.Users.Where(s => s.DeleteDate == null && s.UserId == id).FirstAsync();
+            return await _db.Customers.Where(s => s.DeleteDate == null && s.UserId == id).FirstAsync();
         }
 
         public async Task<bool> EditUser(UserDto user)
@@ -155,7 +155,7 @@ namespace MovieLibrary.Business
 
         public async Task<bool> DeleteUser(int id)
         {
-            var targetUser = await _db.Users.FindAsync(id);
+            var targetUser = await _db.Customers.FindAsync(id);
 
             if (targetUser != null)
             {
