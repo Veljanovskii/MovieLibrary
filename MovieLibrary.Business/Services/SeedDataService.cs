@@ -159,8 +159,8 @@ namespace MovieLibrary.Business.Services
                     Active = true,
                     Email = "jack.doe@example.com",
                     NormalizedEmail = "JACK.DOE@EXAMPLE.COM",
-                    UserName = "Jack",
-                    NormalizedUserName = "JACK",
+                    UserName = "jack.doe@example.com",
+                    NormalizedUserName = "JACK.DOE@EXAMPLE.COM",
                     PhoneNumber = "+111111111111",
                     EmailConfirmed = true,
                     PhoneNumberConfirmed = true,
@@ -170,9 +170,6 @@ namespace MovieLibrary.Business.Services
                 var password = new PasswordHasher<Employee>();
                 var hashed = password.HashPassword(employee, "secret");
                 employee.PasswordHash = hashed;
-
-                //var userStore = new UserStore<Employee>(_db);
-                //userStore.CreateAsync(employee);
 
                 _db.Employees.Add(employee);
                 _db.SaveChanges();

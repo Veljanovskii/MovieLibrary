@@ -43,13 +43,13 @@ namespace MovieLibrary.WebAPI
             services.AddControllers();
             services.AddScoped<IMovieService, MovieService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddTransient<ISeedDataService, SeedDataService>();
             services.AddDbContext<MovielibraryContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("Con")), ServiceLifetime.Transient);
 
-            services.AddIdentity<Employee, IdentityRole>(options => { 
-                options.SignIn.RequireConfirmedAccount = true;
-                options.Password.RequiredLength = 10;
+            services.AddIdentity<Employee, IdentityRole>(options => {
+                options.Password.RequiredLength = 5;
                 }).AddEntityFrameworkStores<MovielibraryContext>();
             services.AddSwaggerGen(c =>
             {
