@@ -19,11 +19,10 @@ namespace MovieLibrary.Business.Services
             _db = db;
         }
 
-        public async Task InsertEmployee(Employee employee)
+        public async Task InsertEmployee(EmployeeDto employee)
         {
-            var password = new PasswordHasher<Employee>();
-            var hashed = password.HashPassword(employee, employee.PasswordHash);
-            employee.PasswordHash = hashed;
+            var password = new PasswordHasher<EmployeeDto>();
+            var hashed = password.HashPassword(employee, employee.Password);
 
             Employee newEmployee = new Employee
             {
@@ -37,16 +36,79 @@ namespace MovieLibrary.Business.Services
                 EmailConfirmed = true,
                 PhoneNumber = employee.PhoneNumber,
                 PhoneNumberConfirmed = true,
-                SecurityStamp = Guid.NewGuid().ToString("D")                
+                SecurityStamp = Guid.NewGuid().ToString("D"),
+                PasswordHash = hashed
             };
+
 
             await _db.Employees.AddAsync(newEmployee);
             await _db.SaveChangesAsync();
         }
 
-        public Task<EmployeesTotal> GetEmployees(string sort, string order, int page, int size, string search)
+        public async Task<EmployeesTotal> GetEmployees(string sort, string order, int page, int size, string search)
         {
-            throw new NotImplementedException();
+            IQueryable<Employee> employeesQuery = _db.Employees.OrderBy(s => s.Id);
+
+            switch (sort)
+            {
+                case "FirstName":
+                    if (order == "desc")
+                        employeesQuery = _db.Employees.OrderByDescending(s => s.FirstName);
+                    else
+                        employeesQuery = _db.Employees.OrderBy(s => s.FirstName);
+                    break;
+                case "LastName":
+                    if (order == "desc")
+                        employeesQuery = _db.Employees.OrderByDescending(s => s.LastName);
+                    else
+                        employeesQuery = _db.Employees.OrderBy(s => s.LastName);
+                    break;
+                case "Email":
+                    if (order == "desc")
+                        employeesQuery = _db.Employees.OrderByDescending(s => s.Email);
+                    else
+                        employeesQuery = _db.Employees.OrderBy(s => s.Email);
+                    break;
+                case "PhoneNumber":
+                    if (order == "desc")
+                        employeesQuery = _db.Employees.OrderByDescending(s => s.PhoneNumber);
+                    else
+                        employeesQuery = _db.Employees.OrderBy(s => s.PhoneNumber);
+                    break;
+            }
+
+            List<Employee> employees;
+            int total;
+
+            if (search != null && search.Length > 2)
+            {
+                employees = await employeesQuery
+                    .Where(s => s.Active == true)
+                    .Where(s => s.FirstName.Contains(search) || s.LastName.Contains(search))
+                    .Skip(page * size)
+                    .Take(size)
+                    .ToListAsync();
+                total = await employeesQuery
+                    .Where(s => s.Active == true)
+                    .Where(s => s.FirstName.Contains(search) || s.LastName.Contains(search))
+                    .CountAsync();
+            }
+            else
+            {
+                employees = await employeesQuery.Where(s => s.Active == true)
+                    .Skip(page * size)
+                    .Take(size)
+                    .ToListAsync();
+                total = await employeesQuery.Where(s => s.Active == true).CountAsync();
+            }
+
+            EmployeesTotal employeesTotal = new EmployeesTotal
+            {
+                Employees = employees,
+                TotalEmployees = total
+            };
+
+            return employeesTotal;
         }
 
         public async Task<Employee> GetEmployee(string id)
@@ -54,9 +116,28 @@ namespace MovieLibrary.Business.Services
             return await _db.Employees.Where(s => s.Active == true && s.Id == id).FirstAsync();
         }
 
-        public Task<bool> EditEmployee(Employee employee)
+        public async Task<bool> EditEmployee(EmployeeDto employee)
         {
-            throw new NotImplementedException();
+            var targetEmployee = await _db.Employees.Where(s => s.Active == true && s.Email == employee.Email).FirstAsync();
+
+            if (targetEmployee != null)
+            {
+                var password = new PasswordHasher<EmployeeDto>();
+                var hashed = password.HashPassword(employee, employee.Password);
+
+                targetEmployee.FirstName = employee.FirstName;
+                targetEmployee.LastName = employee.LastName;
+                targetEmployee.Email = employee.Email;
+                targetEmployee.PasswordHash = hashed;
+                targetEmployee.PhoneNumber = employee.PhoneNumber;
+
+                await _db.SaveChangesAsync();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public async Task<bool> DeleteEmployee(string id)

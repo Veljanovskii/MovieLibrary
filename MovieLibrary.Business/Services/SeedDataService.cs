@@ -161,7 +161,7 @@ namespace MovieLibrary.Business.Services
                     NormalizedEmail = "JACK.DOE@EXAMPLE.COM",
                     UserName = "jack.doe@example.com",
                     NormalizedUserName = "JACK.DOE@EXAMPLE.COM",
-                    PhoneNumber = "+111111111111",
+                    PhoneNumber = "1111111111",
                     EmailConfirmed = true,
                     PhoneNumberConfirmed = true,
                     SecurityStamp = Guid.NewGuid().ToString("D")

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MovieLibrary.Business;
 using MovieLibrary.Business.Services;
@@ -15,6 +17,7 @@ using MovieLibrary.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace MovieLibrary.WebAPI
@@ -40,22 +43,73 @@ namespace MovieLibrary.WebAPI
                     .AllowAnyOrigin();
                 });
             });
+
             services.AddControllers();
+
             services.AddScoped<IMovieService, MovieService>();
+            
             services.AddScoped<IUserService, UserService>();
+
             services.AddScoped<IEmployeeService, EmployeeService>();
+
             services.AddTransient<ISeedDataService, SeedDataService>();
+
             services.AddDbContext<MovielibraryContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("Con")), ServiceLifetime.Transient);
 
             services.AddIdentity<Employee, IdentityRole>(options => {
                 options.Password.RequiredLength = 5;
                 }).AddEntityFrameworkStores<MovielibraryContext>();
-            services.AddSwaggerGen(c =>
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "MovieLibrary.WebAPI", Version = "v1" });
-            });            
-        }
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = Configuration["Jwt:Issuer"],
+                    ValidAudience = Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+                };
+            });
+
+            services.AddSwaggerGen(swagger =>
+            {
+                swagger.SwaggerDoc("v1", new OpenApiInfo { Title = "MovieLibrary.WebAPI", Version = "v1" });
+
+                // To Enable authorization using Swagger (JWT)
+                swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter 'Bearer' [space] and then your valid token in the text input below.\r\n\r\nExample: \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\""
+                });
+
+                swagger.AddSecurityRequirement(new OpenApiSecurityRequirement() { 
+                    {
+                        new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "Bearer"
+                                }
+                            },
+                            new string[] {}
+                    }
+                });
+
+            });
+
+
+
+        }//
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISeedDataService seeder)
