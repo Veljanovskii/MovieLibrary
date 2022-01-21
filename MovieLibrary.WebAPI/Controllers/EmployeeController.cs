@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MovieLibrary.Business.Services;
+using MovieLibrary.Data.DataModels;
 using MovieLibrary.Data.Models;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace MovieLibrary.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Administrator")]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = "Administrator")]
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
@@ -43,7 +44,7 @@ namespace MovieLibrary.WebAPI.Controllers
 
         // POST api/<EmployeeController>
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] Employee employee)
+        public async Task<IActionResult> Add([FromBody] EmployeeDto employee)
         {
             try
             {
@@ -78,7 +79,7 @@ namespace MovieLibrary.WebAPI.Controllers
 
         // PUT api/<EmployeeController>/5
         [HttpPut]
-        public async Task<IActionResult> Edit([FromBody] Employee employee)
+        public async Task<IActionResult> Edit([FromBody] EmployeeDto employee)
         {
             try
             {
