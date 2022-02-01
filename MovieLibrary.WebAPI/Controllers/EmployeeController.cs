@@ -102,7 +102,7 @@ namespace MovieLibrary.WebAPI.Controllers
         {
             try
             {
-                var found = await _employeeService.DeleteEmployee(id);
+                var found = await _employeeService.ToggleEmployee(id);
 
                 if (found)
                     return Ok();

@@ -38,29 +38,31 @@ namespace MovieLibrary.WebAPI.Controllers
             try
             {
                 var result = await _signInManager.PasswordSignInAsync(loginData.Email, loginData.Password, true, true);
-
-                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-                var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
                 var user = await _userManager.FindByEmailAsync(loginData.Email);
-                var userRole = await _userManager.GetRolesAsync(user);
 
-                var claims = new[] {
-                    new Claim(ClaimTypes.Role, userRole[0]),
-                };
+                if (result.Succeeded && user.Active == true)
+                {
+                    var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+                    var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+                    var userRole = await _userManager.GetRolesAsync(user);
 
-                var token = new JwtSecurityToken(
-                    issuer: _config["Jwt:Issuer"],
-                    audience: _config["Jwt:Audience"],
-                    claims: claims,
-                    expires: DateTime.UtcNow.AddHours(3),
-                    signingCredentials: credentials
-                    );
+                    var claims = new[] 
+                    {
+                        new Claim(ClaimTypes.Role, userRole[0]),
+                    };
 
-                if (result.Succeeded)
+                    var token = new JwtSecurityToken(
+                        issuer: _config["Jwt:Issuer"],
+                        audience: _config["Jwt:Audience"],
+                        claims: claims,
+                        expires: DateTime.UtcNow.AddMinutes(180),
+                        signingCredentials: credentials
+                        );
+
                     return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token), });
+                }
                 else
-                    return NotFound();
-
+                    return NotFound("Email or password are incorrect");
             }
             catch (Exception ex)
             {
