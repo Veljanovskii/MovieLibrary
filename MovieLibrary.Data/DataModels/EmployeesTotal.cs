@@ -9,7 +9,7 @@ namespace MovieLibrary.Data.DataModels
 {
     public class EmployeesTotal
     {
-        public List<Employee> Employees { get; set; }
+        public List<EmployeeDto> Employees { get; set; }
         public int TotalEmployees { get; set; }
     }
 }

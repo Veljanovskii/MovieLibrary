@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MovieLibrary.Business;
 using MovieLibrary.Data.Models;
 using MovieLibrary.Data.DataModels;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -13,6 +14,8 @@ namespace MovieLibrary.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = "Administrator, User")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;

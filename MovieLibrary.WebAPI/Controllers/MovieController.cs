@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MovieLibrary.Business;
 using MovieLibrary.Data.Models;
 using System;
@@ -12,6 +13,7 @@ namespace MovieLibrary.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = "Administrator, User")]
     public class MovieController : ControllerBase
     {
         private readonly IMovieService _movieService;

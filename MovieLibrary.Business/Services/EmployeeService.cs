@@ -13,10 +13,12 @@ namespace MovieLibrary.Business.Services
     public class EmployeeService : IEmployeeService
     {
         private readonly MovielibraryContext _db;
+        private readonly UserManager<Employee> _userManager;
 
-        public EmployeeService(MovielibraryContext db)
+        public EmployeeService(MovielibraryContext db, UserManager<Employee> userManager)
         {
             _db = db;
+            _userManager = userManager;
         }
 
         public async Task InsertEmployee(EmployeeDto employee)
@@ -43,6 +45,9 @@ namespace MovieLibrary.Business.Services
 
             await _db.Employees.AddAsync(newEmployee);
             await _db.SaveChangesAsync();
+
+            Employee e = await _userManager.FindByEmailAsync(newEmployee.Email);
+            await _userManager.AddToRoleAsync(e, employee.Role);
         }
 
         public async Task<EmployeesTotal> GetEmployees(string sort, string order, int page, int size, string search)
@@ -83,52 +88,84 @@ namespace MovieLibrary.Business.Services
             if (search != null && search.Length > 2)
             {
                 employees = await employeesQuery
-                    .Where(s => s.Active == true)
                     .Where(s => s.FirstName.Contains(search) || s.LastName.Contains(search))
                     .Skip(page * size)
                     .Take(size)
                     .ToListAsync();
                 total = await employeesQuery
-                    .Where(s => s.Active == true)
                     .Where(s => s.FirstName.Contains(search) || s.LastName.Contains(search))
                     .CountAsync();
             }
             else
             {
-                employees = await employeesQuery.Where(s => s.Active == true)
+                employees = await employeesQuery
                     .Skip(page * size)
                     .Take(size)
                     .ToListAsync();
-                total = await employeesQuery.Where(s => s.Active == true).CountAsync();
+                total = await employeesQuery.CountAsync();
+            }
+
+            List<EmployeeDto> employeesDto = new List<EmployeeDto>();
+
+            foreach(var employee in employees)
+            {
+                var roles = await _userManager.GetRolesAsync(employee);
+
+                employeesDto.Add(new EmployeeDto()
+                {
+                    Id = employee.Id,
+                    FirstName = employee.FirstName,
+                    LastName = employee.LastName,
+                    Email = employee.Email,
+                    PhoneNumber = employee.PhoneNumber,
+                    Active = employee.Active,
+                    Role = roles[0]
+                });
             }
 
             EmployeesTotal employeesTotal = new EmployeesTotal
             {
-                Employees = employees,
+                Employees = employeesDto,
                 TotalEmployees = total
             };
 
             return employeesTotal;
         }
 
-        public async Task<Employee> GetEmployee(string id)
+        public async Task<EmployeeDto> GetEmployee(string id)
         {
-            return await _db.Employees.Where(s => s.Active == true && s.Id == id).FirstAsync();
+            var targetEmployee = await _db.Employees.Where(s => s.Id == id).FirstAsync();
+            EmployeeDto employeeDto = new EmployeeDto()
+            {
+                Id = targetEmployee.Id,
+                FirstName = targetEmployee.FirstName,
+                LastName = targetEmployee.LastName,
+                Email = targetEmployee.Email,
+                PhoneNumber = targetEmployee.PhoneNumber,
+                Active = targetEmployee.Active
+            };
+            var roles = await _userManager.GetRolesAsync(targetEmployee);
+            employeeDto.Role = roles[0];
+
+            return employeeDto;
         }
 
         public async Task<bool> EditEmployee(EmployeeDto employee)
         {
-            var targetEmployee = await _db.Employees.Where(s => s.Active == true && s.Email == employee.Email).FirstAsync();
+            var targetEmployee = await _db.Employees.Where(s => s.Email == employee.Email).FirstAsync();
 
             if (targetEmployee != null)
             {
-                var password = new PasswordHasher<EmployeeDto>();
-                var hashed = password.HashPassword(employee, employee.Password);
+                if (employee.Password != null)
+                {
+                    var password = new PasswordHasher<EmployeeDto>();
+                    var hashed = password.HashPassword(employee, employee.Password);
+                    targetEmployee.PasswordHash = hashed;
+                }
 
                 targetEmployee.FirstName = employee.FirstName;
                 targetEmployee.LastName = employee.LastName;
                 targetEmployee.Email = employee.Email;
-                targetEmployee.PasswordHash = hashed;
                 targetEmployee.PhoneNumber = employee.PhoneNumber;
 
                 await _db.SaveChangesAsync();
@@ -140,13 +177,16 @@ namespace MovieLibrary.Business.Services
             }
         }
 
-        public async Task<bool> DeleteEmployee(string id)
+        public async Task<bool> ToggleEmployee(string id)
         {
             var targetEmployee = await _db.Employees.FindAsync(id);
 
             if (targetEmployee != null)
             {
-                targetEmployee.Active = false;
+                if (targetEmployee.Active == true)
+                    targetEmployee.Active = false;
+                else
+                    targetEmployee.Active = true;
 
                 await _db.SaveChangesAsync();
                 return true;
