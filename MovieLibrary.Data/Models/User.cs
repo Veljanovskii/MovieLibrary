@@ -17,5 +17,6 @@ namespace MovieLibrary.Data.Models
         public DateTime? DeleteDate { get; set; }
 
         public virtual MaritalStatus MaritalStatus { get; set; }
+        public ICollection<RentedMovie> RentedMovies { get; set; }
     }
 }
