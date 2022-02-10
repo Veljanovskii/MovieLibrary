@@ -21,13 +21,31 @@ namespace MovieLibrary.WebAPI.Controllers
             _rentMovieService = rentMovieService;
         }
 
-        // GET: api/<MovieController>
-        [HttpGet]
-        public async Task<IActionResult> Get(string search)
+
+        [HttpGet("Search")]
+        public async Task<IActionResult> Search(string search, string idNumber)
         {
             try
             {
-                var list = await _rentMovieService.GetMovies(search);
+                var list = await _rentMovieService.GetMovies(search, idNumber);
+
+                if (list != null)
+                    return Ok(list);
+                else
+                    return NotFound();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetRented")]
+        public async Task<IActionResult> GetRentedMovies(string idNumber)
+        {
+            try
+            {
+                var list = await _rentMovieService.GetRentedForUser(idNumber);
 
                 if (list != null)
                     return Ok(list);
@@ -56,13 +74,28 @@ namespace MovieLibrary.WebAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] RentRequest rentRequest)
+        public async Task<IActionResult> RentMovies([FromBody] RentRequest rentRequest)
         {
             try
             {
-                await _rentMovieService.RentMovies(rentRequest);
+                var success = await _rentMovieService.RentMovies(rentRequest);
 
-                return Ok();
+                return Ok(success);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("Return")]
+        public async Task<IActionResult> ReturnMovies([FromBody] RentRequest rentRequest)
+        {
+            try
+            {
+                var success = await _rentMovieService.ReturnMovies(rentRequest);
+
+                return Ok(success);
             }
             catch (Exception ex)
             {

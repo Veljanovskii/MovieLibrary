@@ -28,13 +28,32 @@ namespace MovieLibrary.Business.Services
                 return false;
         }
 
-        public async Task<List<Movie>> GetMovies(string search)
+        public async Task<List<Movie>> GetMovies(string search, string idNumber)
         {
             return await _db.Movies
                 .Where(s => s.DeleteDate == null
                 && s.Caption.Contains(search)
-                && s.Quantity > _db.RentedMovies.Where(r => r.MovieId == s.MovieId).Count()
-                )
+                && s.Quantity > _db.RentedMovies
+                    .Where(r => r.MovieId == s.MovieId
+                        && r.ReturnDate == null)
+                    .Count()
+                && _db.Movies.Select(m => m.MovieId).Except(_db.RentedMovies
+                    .Where(r => r.User.Idnumber == idNumber
+                        && r.ReturnDate == null)
+                    .Select(r => r.MovieId)
+                    )
+                    .Contains(s.MovieId)
+                ).ToListAsync();
+        }
+
+        public async Task<List<Movie>> GetRentedForUser(string idNumber)
+        {
+            return await _db.Movies
+                .Where(s => s.DeleteDate == null && _db.RentedMovies
+                        .Where(r => r.User.Idnumber == idNumber && r.ReturnDate == null)
+                        .Select(r => r.MovieId)
+                        .ToList()
+                        .Contains(s.MovieId)                )
                 .ToListAsync();
         }
 
@@ -65,6 +84,27 @@ namespace MovieLibrary.Business.Services
 
             await _db.RentedMovies.AddRangeAsync(rentedMovies);
             await _db.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> ReturnMovies(RentRequest returnReqest)
+        {
+            var targetUser = await _db.Customers.Where(c => c.DeleteDate == null && c.Idnumber == returnReqest.SelectedIDnumber).FirstAsync();
+            if (targetUser == null)
+            {
+                return false;
+            }
+
+            foreach (var item in returnReqest.Movies)
+            {
+                var target = await _db.RentedMovies
+                    .Where(r => r.User.Idnumber == returnReqest.SelectedIDnumber
+                        && r.MovieId == item)
+                    .FirstOrDefaultAsync();
+                target.ReturnDate = DateTime.UtcNow;
+                await _db.SaveChangesAsync();
+            }
+
             return true;
         }
     }
