@@ -26,6 +26,7 @@ namespace MovieLibrary.Data.Models
         public virtual DbSet<Movie> Movies { get; set; }
         public virtual DbSet<User> Customers { get; set; }
         public virtual DbSet<Employee> Employees { get; set; }
+        public virtual DbSet<RentedMovie> RentedMovies { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -52,6 +52,8 @@ namespace MovieLibrary.WebAPI
 
             services.AddScoped<IEmployeeService, EmployeeService>();
 
+            services.AddScoped<IRentMovieService, RentMovieService>();
+
             services.AddTransient<ISeedDataService, SeedDataService>();
 
             services.AddDbContext<MovielibraryContext>(options =>

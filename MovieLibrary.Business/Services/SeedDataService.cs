@@ -65,7 +65,8 @@ namespace MovieLibrary.Business.Services
                         ReleaseYear = 2013,
                         MovieLength = 180,
                         InsertDate = DateTime.ParseExact("2021-12-21 15:50:35.703", "yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
-                        DeleteDate = null
+                        DeleteDate = null,
+                        Quantity = 3
                     },
                     new Movie
                     {
@@ -73,7 +74,8 @@ namespace MovieLibrary.Business.Services
                         ReleaseYear = 1994,
                         MovieLength = 140,
                         InsertDate = DateTime.ParseExact("2021-12-22 11:43:11.777", "yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
-                        DeleteDate = null
+                        DeleteDate = null,
+                        Quantity = 5
                     },
                     new Movie
                     {
@@ -81,7 +83,8 @@ namespace MovieLibrary.Business.Services
                         ReleaseYear = 2009,
                         MovieLength = 170,
                         InsertDate = DateTime.ParseExact("2021-12-22 16:14:25.437", "yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
-                        DeleteDate = null
+                        DeleteDate = null,
+                        Quantity = 11
                     }
                 };
 
