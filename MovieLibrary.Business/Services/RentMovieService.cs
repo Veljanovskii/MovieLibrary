@@ -99,7 +99,8 @@ namespace MovieLibrary.Business.Services
             {
                 var target = await _db.RentedMovies
                     .Where(r => r.User.Idnumber == returnReqest.SelectedIDnumber
-                        && r.MovieId == item)
+                        && r.MovieId == item
+                        && r.ReturnDate == null)
                     .FirstOrDefaultAsync();
                 target.ReturnDate = DateTime.UtcNow;
                 await _db.SaveChangesAsync();
