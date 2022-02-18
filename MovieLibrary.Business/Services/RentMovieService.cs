@@ -28,7 +28,7 @@ namespace MovieLibrary.Business.Services
                 return false;
         }
 
-        public async Task<List<Movie>> GetMovies(string search, string idNumber)
+        public async Task<List<MovieLight>> GetMovies(string search, string idNumber)
         {
             return await _db.Movies
                 .Where(s => s.DeleteDate == null
@@ -43,7 +43,26 @@ namespace MovieLibrary.Business.Services
                     .Select(r => r.MovieId)
                     )
                     .Contains(s.MovieId)
-                ).ToListAsync();
+                ).Select(s => new MovieLight { MovieId = s.MovieId, Caption = s.Caption })
+                .ToListAsync();
+        }
+
+        public async Task<List<MovieLight>> GetShowMovies(List<int> movies)
+        {
+            List<MovieLight> result = new List<MovieLight>();
+
+            foreach (var movie in movies)
+            {
+                //var lmao = await _db.Movies.SingleOrDefaultAsync(s => s.MovieId == movie);
+                var movieLight = await _db.Movies
+                    .Where(s => s.MovieId == movie)
+                    .Select(s => new MovieLight { MovieId = s.MovieId, Caption = s.Caption })
+                    .FirstOrDefaultAsync();
+
+                result.Add(movieLight);
+            }
+
+            return result;
         }
 
         public async Task<List<Movie>> GetRentedForUser(string idNumber)

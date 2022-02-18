@@ -31,22 +31,25 @@ namespace MovieLibrary.Data.Helpers
                 DeleteDate = user.DeleteDate
             };
 
+            if (user.ProfilePicture != null)
+                userDto.ProfilePicture = Encoding.UTF8.GetString(user.ProfilePicture);
+
             return userDto;
         }
 
-        public User MapDtoToUser(UserDto userDto)
+        public User MapDtoToUser(User user, UserDto userDto)
         {
-            User user = new User
-            {
-                UserId = userDto.UserId,
-                FirstName = userDto.FirstName,
-                LastName = userDto.LastName,
-                Address = userDto.Address,
-                Idnumber = userDto.Idnumber,
-                MaritalStatusId = _db.MaritalStatuses.Where(s => s.Caption == userDto.MaritalStatus).Select(s => s.MaritalStatusId).First(),
-                InsertDate = userDto.InsertDate,
-                DeleteDate = userDto.DeleteDate
-            };
+            user.UserId = userDto.UserId;
+            user.FirstName = userDto.FirstName;
+            user.LastName = userDto.LastName;
+            user.Address = userDto.Address;
+            user.Idnumber = userDto.Idnumber;
+            user.MaritalStatusId = _db.MaritalStatuses.Where(s => s.Caption == userDto.MaritalStatus).Select(s => s.MaritalStatusId).First();
+            user.InsertDate = userDto.InsertDate;
+            user.DeleteDate = userDto.DeleteDate;
+
+            if (!String.IsNullOrEmpty(userDto.ProfilePicture)) 
+                user.ProfilePicture = Encoding.UTF8.GetBytes(userDto.ProfilePicture);
 
             return user;
         }

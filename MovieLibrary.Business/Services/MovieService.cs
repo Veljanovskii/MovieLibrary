@@ -26,7 +26,8 @@ namespace MovieLibrary.Business
                 InsertDate = movie.InsertDate,
                 ReleaseYear = movie.ReleaseYear,
                 MovieLength = movie.MovieLength,
-                Quantity = movie.Quantity
+                Quantity = movie.Quantity,
+                Avatar = movie.Avatar
             };
 
             await _db.Movies.AddAsync(newMovie);

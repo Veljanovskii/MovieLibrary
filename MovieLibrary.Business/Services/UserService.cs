@@ -23,18 +23,8 @@ namespace MovieLibrary.Business
 
         public async Task InsertUser(UserDto userDto)
         {
-            User user = new User()
-            {
-                FirstName = userDto.FirstName,
-                LastName = userDto.LastName,
-                Address = userDto.Address,
-                Idnumber = userDto.Idnumber,
-                InsertDate = DateTime.Now
-            };
-
-            var maritalStatusId = await _db.MaritalStatuses.Where(s => s.Caption == userDto.MaritalStatus).Select(s => s.MaritalStatusId).FirstAsync();
-
-            user.MaritalStatusId = maritalStatusId;
+            User user = new User();
+            _mapper.MapDtoToUser(user, userDto);
 
             await _db.Customers.AddAsync(user);
             await _db.SaveChangesAsync();
@@ -125,24 +115,19 @@ namespace MovieLibrary.Business
             return usersTotal;
         }
 
-        public async Task<User> GetUser(int id)
+        public async Task<UserDto> GetUser(int id)
         {
-            return await _db.Customers.Where(s => s.DeleteDate == null && s.UserId == id).FirstAsync();
+            var user = await _db.Customers.Where(s => s.DeleteDate == null && s.UserId == id).FirstAsync();
+            return _mapper.MapUserToDto(user);
         }
 
         public async Task<bool> EditUser(UserDto user)
         {
-            var targetUser = await GetUser(user.UserId);
+            var targetUser = await _db.Customers.Where(s => s.UserId == user.UserId).SingleOrDefaultAsync();
 
             if (targetUser != null)
             {
-                targetUser.FirstName = user.FirstName;
-                targetUser.LastName = user.LastName;
-                targetUser.Address = user.Address;
-                targetUser.Idnumber = user.Idnumber;
-
-                var maritalStatusId = await _db.MaritalStatuses.Where(s => s.Caption == user.MaritalStatus).Select(s => s.MaritalStatusId).FirstAsync();
-                targetUser.MaritalStatusId = maritalStatusId;
+                _mapper.MapDtoToUser(targetUser, user);
 
                 await _db.SaveChangesAsync();
                 return true;

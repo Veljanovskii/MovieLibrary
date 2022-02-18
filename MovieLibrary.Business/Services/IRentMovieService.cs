@@ -10,7 +10,8 @@ namespace MovieLibrary.Business.Services
 {
     public interface IRentMovieService
     {
-        public Task<List<Movie>> GetMovies(string search, string idNumber);
+        public Task<List<MovieLight>> GetMovies(string search, string idNumber);
+        public Task<List<MovieLight>> GetShowMovies(List<int> movies);
         public Task<bool> RentMovies(RentRequest rentReqest);
         public Task<bool> ReturnMovies(RentRequest returnReqest);
         public Task<bool> CheckValid(string idNumber);
