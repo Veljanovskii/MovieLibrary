@@ -2,6 +2,7 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MovieLibrary.Data.Models
 {
@@ -15,6 +16,8 @@ namespace MovieLibrary.Data.Models
         public int MaritalStatusId { get; set; }
         public DateTime InsertDate { get; set; }
         public DateTime? DeleteDate { get; set; }
+        [Column("Profile picture")]
+        public byte[] ProfilePicture { get; set; }
 
         public virtual MaritalStatus MaritalStatus { get; set; }
         public ICollection<RentedMovie> RentedMovies { get; set; }

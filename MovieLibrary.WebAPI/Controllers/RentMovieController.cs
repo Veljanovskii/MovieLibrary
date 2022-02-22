@@ -40,6 +40,24 @@ namespace MovieLibrary.WebAPI.Controllers
             }
         }
 
+        [HttpGet("Show")]
+        public async Task<IActionResult> Show([FromQuery] List<int> movies)
+        {
+            try
+            {
+                var list = await _rentMovieService.GetShowMovies(movies);
+
+                if (list != null)
+                    return Ok(list);
+                else
+                    return NotFound();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet("GetRented")]
         public async Task<IActionResult> GetRentedMovies(string idNumber)
         {

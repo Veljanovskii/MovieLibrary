@@ -14,6 +14,7 @@ namespace MovieLibrary.Data.DataModels
         public string Address { get; set; }
         public string Idnumber { get; set; }
         public string MaritalStatus { get; set; }
+        public string ProfilePicture { get; set; }
         public DateTime InsertDate { get; set; }
         public DateTime? DeleteDate { get; set; }
     }
