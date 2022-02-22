@@ -53,7 +53,6 @@ namespace MovieLibrary.Business.Services
 
             foreach (var movie in movies)
             {
-                //var lmao = await _db.Movies.SingleOrDefaultAsync(s => s.MovieId == movie);
                 var movieLight = await _db.Movies
                     .Where(s => s.MovieId == movie)
                     .Select(s => new MovieLight { MovieId = s.MovieId, Caption = s.Caption })
