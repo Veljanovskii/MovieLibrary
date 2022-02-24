@@ -130,13 +130,13 @@ namespace MovieLibrary.Business.Services
 
         internal void CreateRoles()
         {
-            //var roleStore = new RoleStore<IdentityRole>(_db);
+            var roleStore = new RoleStore<IdentityRole>(_db);
 
-            //if (!_db.Roles.Any())
-            //{
-            //    roleStore.CreateAsync(new IdentityRole() { Name = "Administrator", NormalizedName = "Administrator".ToUpper() });
-            //    roleStore.CreateAsync(new IdentityRole() { Name = "User", NormalizedName = "User".ToUpper() });
-            //}
+            if (!_db.Roles.Any())
+            {
+                roleStore.CreateAsync(new IdentityRole() { Name = "Administrator", NormalizedName = "Administrator".ToUpper() });
+                roleStore.CreateAsync(new IdentityRole() { Name = "User", NormalizedName = "User".ToUpper() });
+            }
 
             if (!_db.Roles.Any()) 
             {
